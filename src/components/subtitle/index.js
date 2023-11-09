@@ -16,7 +16,7 @@ import {
   import { addTitleAction } from "@/store/slices/authSlice";
 
   import { templateReplaceValues, fields, newTemplate } from "../testdata";
-export default function Subtitle() {
+export default function Subtitle({childCounter}) {
   const dispatch=useDispatch()
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -26,10 +26,10 @@ export default function Subtitle() {
     const [titleName,setTitleName ] = useState('');
     // const [arr, setArr] = useState([<Title/>, <Title/>]);
     const [t_number,setT_number]=useState('')
-    let [counter,setCounter]=useState(0)
+    let [counter,setCounter]=useState(Number(childCounter))
 
     const handleClickCreate = () => {
-        setCounter(counter=+1)
+        setCounter(counter+1)
         setTitleCreate(true);
     };
 
@@ -157,7 +157,7 @@ export default function Subtitle() {
             </Collapse>
             
 
-            {showH1 && <Subtitle></Subtitle>}
+            {showH1 && <Subtitle childCounter={counter}/>}
         </div>
         ):(
             <>

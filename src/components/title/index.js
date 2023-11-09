@@ -1,3 +1,4 @@
+
 import {
     ButtonDropdown,
     DropdownToggle,
@@ -14,12 +15,15 @@ import {
   import FroalaEditorComponent from 'react-froala-wysiwyg';
   import { Editor } from '@tinymce/tinymce-react';
   import React, { useRef } from 'react';
-  import { addTitleAction } from "@/store/slices/authSlice";
+  import { addTitleAction,getAllTitlesAction,getAllTitles } from "@/store/slices/authSlice";
   import { setCounterReducer } from "@/store/slices/authSlice";
   import { templateReplaceValues, fields, newTemplate } from "../testdata";
+  import TreeView from "../treenode";
 export default function Title({childCounter}) {
   const dispatch=useDispatch()
   let counterSlice= useSelector((state) => state.auth.titleCounter);
+  const allTitles= useSelector((state) => state.auth.allTitles);
+  
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [showH1, setShowH1] = useState(false);
@@ -27,6 +31,7 @@ export default function Title({childCounter}) {
     const [titleCreate, setTitleCreate] = useState(false);
     const [showComponent, setShowComponent] = useState(true);
     const [titleName,setTitleName ] = useState('');
+    const [titleNumber,setTitleNumber ] = useState('');
     const [arr, setArr] = useState([<Title/>, <Title/>]);
     const [t_number,setT_number]=useState('')
     let chCounter = Number(childCounter);
@@ -37,12 +42,14 @@ export default function Title({childCounter}) {
     let a=[]
 
     const handleClickCreate = () => {
-      a.push(co)
-      console.log('counterSlice',counterSlice)
-      setCounter(counterSlice)
+      
+     
 
+      setCounter(counterSlice)
+  
       setTitleCreate(true);
       counterclickPlusbutton=counterclickPlusbutton+1
+      console.log('handleClickCreate  started  a=',a,' 1.1 counter  =',counter,'counterclickPlusbutton=',counterclickPlusbutton)
         if(Number(counterclickPlusbutton)==Number(counter)){
        
   
@@ -51,15 +58,18 @@ export default function Title({childCounter}) {
         }
         else(Number(counterclickPlusbutton)!=Number(counter))
         {
-        
+         
           console.log('2 else vetka')  
+
           setCounter(Number(counter)+1)
-        console.log('3 counter after click +',counter)
+         
+          console.log('3 counter after click +',counter,'a===',a)
         }
     };
 
     useEffect(() => {
         return () => {
+          dispatch(getAllTitlesAction())
           console.log('Компонент удален');
         };
       }, []);
@@ -73,18 +83,23 @@ export default function Title({childCounter}) {
         e.stopPropagation();
         // console.log('handleclick start',e.target.value);
         setTitleName(e.target.value)
-
-      
-      
     };
 
+    const handleTitleAddT_number = async(e) => {
+      setIsOpen(false)
+      e.stopPropagation();
+      // console.log('handleclick start',e.target.value);
+      setTitleNumber(e.target.value)
+
+
+  };
  
     const handleClick = async(e) => {
       setIsOpen(false)
       e.stopPropagation();
         const formData = new FormData();
         formData.append('name', titleName);
-        formData.append('t_number', counter);
+        formData.append('t_number', titleNumber);
 
         await dispatch(addTitleAction(formData))
       
@@ -94,7 +109,10 @@ export default function Title({childCounter}) {
 
     useEffect(()=>{
         setCounter(counterSlice)
-    },[counterSlice])
+        
+        // dispatch(getAllTitles())
+
+    },[counterSlice,allTitles,dispatch])
 
 
     const handleClickButtonPlus = (e) => {
@@ -136,18 +154,31 @@ export default function Title({childCounter}) {
         console.log(content);
       }
 
+
+
+      // useEffect(()=>{
+      //   dispatch(getAllTitlesAction())
+      // },[allTitles])
+      
+      
+      // console.log('ALL TITLES=',allTitles)
+  
       return (
         <>
+         
         {titleCreate ? (
+          
         <div>
         <Button style={{ width: '100%' }} color="dark" onClick={toggleAccordion}>
+        
           <div className="d-flex justify-content-between">
               <div className="justify-content-start">
              
               {/* {showH2 && Number(counter)+1} */}
-              {counter}
+              <input  onChange={handleTitleAddT_number} type="text" placeholder="введине #" style={{'width':'100px'}} className="me-2" />
 
-               <input  onChange={handleTitleinputChange} type="text" placeholder="введине наименование" />
+
+               <input  onChange={handleTitleinputChange} type="text" placeholder="введите наименование" />
 
                   <button onClick={handleClick}className="btn btn-light me-5">save</button>
               </div>
@@ -177,9 +208,9 @@ export default function Title({childCounter}) {
                 </div> */}
             {/* </Button> */}
             
-            
+          
 
-            {showH1 && <Subtitle />}
+            {showH1 && <Subtitle  childCounter={counter}/>}
             {showH2 && <Title childCounter={counter}/>}
         </div>
         ):(
@@ -187,6 +218,41 @@ export default function Title({childCounter}) {
             <button onClick={handleClickCreate} className="btn btn-info me-5">+</button>
             </>
         )}
+
+<h1>sldvnslvl</h1>
+{allTitles.map((item)=>(
+  // console.log('allTitles.t_number',item.t_number,item.name)
+<div >
+    <span> title number=  {item.t_number}   title name=  {item.name}</span>
+    <Button style={{ width: '100%' }} color="dark" onClick={toggleAccordion}>
+        
+        <div className="d-flex justify-content-between">
+            <div className="justify-content-start">
+           
+            {/* {showH2 && Number(counter)+1} */}
+            <input  onChange={handleTitleAddT_number} type="text" placeholder={item.t_number} style={{'width':'100px'}} className="me-2" />
+
+
+             <input  onChange={handleTitleinputChange} type="text" placeholder={item.name} />
+
+                {/* <button onClick={handleClick}className="btn btn-light me-5">save</button> */}
+            </div>
+            {titleName}
+            
+            <div className="justify-content-end">
+                <button onClick={handleClickButtonCreateTitle} className="btn btn-light me-5">CreateNewTitle</button>
+                <button onClick={handleClickButtonPlus} className="btn btn-light me-5">CreateNewSubtitle</button>
+                <button className="btn btn-light">IN PROGRESS</button>
+            </div>
+        </div>
+        </Button>
+</div>
+))}
+
+
+       
+        {/* <TreeView/> */}
+        
         </>
         
         

@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { authorize } from "@/store/slices/authSlice";
 import "froala-editor/css/froala_style.min.css";
 import "froala-editor/css/froala_editor.pkgd.min.css";
+import Tree from "@/components/treenode"
 
 import FroalaEditorComponent from "react-froala-wysiwyg";
 export default function Editor() {
@@ -51,6 +52,7 @@ export default function Editor() {
   return (
     <>
       <Title/>
+      {/* <Tree></Tree> */}
     </>
   );
 }
