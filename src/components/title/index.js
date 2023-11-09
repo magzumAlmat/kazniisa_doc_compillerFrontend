@@ -15,7 +15,7 @@ import {
   import FroalaEditorComponent from 'react-froala-wysiwyg';
   import { Editor } from '@tinymce/tinymce-react';
   import React, { useRef } from 'react';
-  import { addTitleAction,getAllTitlesAction,getAllTitles,UpdateTitleAction } from "@/store/slices/authSlice";
+  import { addTitleAction,getAllTitlesAction,getAllTitles,UpdateTitleAction ,deleteTitleAction} from "@/store/slices/authSlice";
   import { setCounterReducer } from "@/store/slices/authSlice";
   import { templateReplaceValues, fields, newTemplate } from "../testdata";
   import TreeView from "../treenode";
@@ -120,7 +120,22 @@ export default function Title({childCounter}) {
         await dispatch(UpdateTitleAction(formData))
       
         console.log('1 counter slice',counterSlice)
-        alert('Вы изменили ',titleName)
+        
+        // await dispatch((setCounterReducer));
+    };
+
+    const detelehandleClick = async(passedData) => {
+      console.log('updatehandleClick started',passedData)
+      // console.log('handleclick start',e.target.value);
+      setIsOpen(false)
+      // e.stopPropagation();
+        const formData = new FormData();
+        formData.append('passedId', passedData);
+       
+
+        await dispatch(deleteTitleAction(passedData))
+      
+     
         // await dispatch((setCounterReducer));
     };
 
@@ -184,7 +199,7 @@ export default function Title({childCounter}) {
         <>
          
         {titleCreate ? (
-          
+        
         <div>
         <Button style={{ width: '100%' }} color="dark" onClick={toggleAccordion}>
         
@@ -194,9 +209,7 @@ export default function Title({childCounter}) {
               {/* {showH2 && Number(counter)+1} */}
               <input  onChange={handleTitleAddT_number} type="text" placeholder="введине #" style={{'width':'100px'}} className="me-2" />
 
-
                <input  onChange={handleTitleinputChange} type="text" placeholder="введите наименование" />
-
                   <button onClick={handleClick}className="btn btn-light me-5">save</button>
               </div>
               {titleName}
@@ -227,21 +240,32 @@ export default function Title({childCounter}) {
             
           
 
-            {showH1 && <Subtitle  childCounter={counter}/>}
+            {showH1 && <Subtitle  childCounter={counter} />}
             {showH2 && <Title childCounter={counter}/>}
         </div>
         ):(
             <>
-            <button onClick={handleClickCreate} className="btn btn-info me-5">+</button>
+            <button onClick={handleClickCreate} className="btn btn-info me-5">Добавить title</button>
             </>
         )}
+<br />
+<br />
+<br />
+<br />
 
-<h1>sldvnslvl</h1>
+<br />
+<br />
+
+
+<br />
+<br />
+<br />
+<h1>Ваши данные</h1>
 {allTitles.map((item)=>(
   // console.log('allTitles.t_number',item.t_number,item.name)
  
 <div >
-    <span> title number=  {item.t_number}   title name=  {item.name}, {item.id}</span>
+    {/* <span> title number=  {item.t_number}   title name=  {item.name}, {item.id}</span> */}
     <Button style={{ width: '100%' }} color="dark" onClick={toggleAccordion}>
         
         <div className="d-flex justify-content-between">
@@ -253,15 +277,17 @@ export default function Title({childCounter}) {
 
              <input  onChange={handleTitleinputChange} type="text" placeholder={item.name} />
 
-                    {item.id}
-                   <button onClick={() => updatehandleClick(item.id)}className="btn btn-light me-5">save</button> 
+                 
+                   <button onClick={() => updatehandleClick(item.id)}className="btn btn-light me-5">Изменить</button> 
             </div>
             {titleName}
             
             <div className="justify-content-end">
-                <button onClick={handleClickButtonCreateTitle} className="btn btn-light me-5">CreateNewTitle</button>
+                <button onClick={handleClickCreate} className="btn btn-light me-5">CreateNewTitle</button>
                 <button onClick={handleClickButtonPlus} className="btn btn-light me-5">CreateNewSubtitle</button>
                 <button className="btn btn-light">IN PROGRESS</button>
+                <button className="btn btn-light" onClick={() => detelehandleClick(item.id)}>X</button>
+
             </div>
         </div>
         </Button>

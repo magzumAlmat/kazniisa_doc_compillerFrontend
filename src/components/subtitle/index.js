@@ -55,10 +55,17 @@ export default function Subtitle({childCounter}) {
     const handleClick = async(e) => {
       setIsOpen(false)
       e.stopPropagation();
+      console.log(e.target.value)
         const formData = new FormData();
         formData.append('name', titleName);
-        formData.append('t_number', counter);
+        formData.append('p_number', counter);
+        formData.append('text', text);
+        formData.append('TitleId', passedID);
+       
+      
+      
 
+        
         await dispatch(addTitleAction(formData))
       
     };
