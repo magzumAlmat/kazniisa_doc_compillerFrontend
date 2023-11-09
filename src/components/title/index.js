@@ -15,7 +15,7 @@ import {
   import FroalaEditorComponent from 'react-froala-wysiwyg';
   import { Editor } from '@tinymce/tinymce-react';
   import React, { useRef } from 'react';
-  import { addTitleAction,getAllTitlesAction,getAllTitles } from "@/store/slices/authSlice";
+  import { addTitleAction,getAllTitlesAction,getAllTitles,UpdateTitleAction } from "@/store/slices/authSlice";
   import { setCounterReducer } from "@/store/slices/authSlice";
   import { templateReplaceValues, fields, newTemplate } from "../testdata";
   import TreeView from "../treenode";
@@ -104,6 +104,23 @@ export default function Title({childCounter}) {
         await dispatch(addTitleAction(formData))
       
         console.log('1 counter slice',counterSlice)
+        // await dispatch((setCounterReducer));
+    };
+
+    const updatehandleClick = async(passedData) => {
+      console.log('updatehandleClick started',passedData)
+      // console.log('handleclick start',e.target.value);
+      setIsOpen(false)
+      // e.stopPropagation();
+        const formData = new FormData();
+        formData.append('passedId', passedData);
+        formData.append('name', titleName);
+        formData.append('t_number', titleNumber);
+
+        await dispatch(UpdateTitleAction(formData))
+      
+        console.log('1 counter slice',counterSlice)
+        alert('Вы изменили ',titleName)
         // await dispatch((setCounterReducer));
     };
 
@@ -222,8 +239,9 @@ export default function Title({childCounter}) {
 <h1>sldvnslvl</h1>
 {allTitles.map((item)=>(
   // console.log('allTitles.t_number',item.t_number,item.name)
+ 
 <div >
-    <span> title number=  {item.t_number}   title name=  {item.name}</span>
+    <span> title number=  {item.t_number}   title name=  {item.name}, {item.id}</span>
     <Button style={{ width: '100%' }} color="dark" onClick={toggleAccordion}>
         
         <div className="d-flex justify-content-between">
@@ -235,7 +253,8 @@ export default function Title({childCounter}) {
 
              <input  onChange={handleTitleinputChange} type="text" placeholder={item.name} />
 
-                {/* <button onClick={handleClick}className="btn btn-light me-5">save</button> */}
+                    {item.id}
+                   <button onClick={() => updatehandleClick(item.id)}className="btn btn-light me-5">save</button> 
             </div>
             {titleName}
             
@@ -246,6 +265,10 @@ export default function Title({childCounter}) {
             </div>
         </div>
         </Button>
+
+
+        {showH1 && <Subtitle  childCounter={counter}/>}
+            {showH2 && <Title childCounter={counter}/>}
 </div>
 ))}
 

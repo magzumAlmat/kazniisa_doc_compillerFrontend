@@ -672,6 +672,40 @@ export const addCompanyAction=(name,description,bin,address,contactEmail,contact
 
 
 
+    
+    export const UpdateTitleAction=(formData)=>async(dispatch)=>{
+      console.log('addFullProfileDataAction started')
+    
+      const token = localStorage.getItem("token");
+      for (const value of formData.values()) {
+        console.log('passed formData Values',value);
+    }
+      
+      if (!token) {
+        console.error('Token not available');
+        return;
+      }
+
+      try {
+        const response = await axios.put(
+          `${END_POINT}/api/edittitle`,formData,{
+            headers: {
+              // 'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json', // Set the content type to JSON
+            },
+          }
+        );
+      
+        console.log('Data uploaded successfully:', response.data);
+        dispatch(setCounterReducer(response.data))
+        // Handle success, e.g., dispatch an action to update state
+      } catch (error) {
+        console.error('Error uploading data:', error);
+        // Handle errors, e.g., by returning an error object or dispatching an error action
+      }
+  
+
+    }
 
 
     export const addTitleAction=(formData)=>async(dispatch)=>{
