@@ -22,6 +22,7 @@ import {
 export default function Title({childCounter}) {
   const dispatch=useDispatch()
   let counterSlice= useSelector((state) => state.auth.titleCounter);
+  let titleId= useSelector((state) => state.auth.titleId);
   const allTitles= useSelector((state) => state.auth.allTitles);
   
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -46,7 +47,7 @@ export default function Title({childCounter}) {
      
 
       setCounter(counterSlice)
-  
+      
       setTitleCreate(true);
       counterclickPlusbutton=counterclickPlusbutton+1
       console.log('handleClickCreate  started  a=',a,' 1.1 counter  =',counter,'counterclickPlusbutton=',counterclickPlusbutton)
@@ -72,7 +73,7 @@ export default function Title({childCounter}) {
           dispatch(getAllTitlesAction())
           console.log('Компонент удален');
         };
-      }, []);
+      }, [dispatch]);
 
       const handleComponentClick = () => {
         setShowComponent(false);
@@ -102,9 +103,12 @@ export default function Title({childCounter}) {
         formData.append('t_number', titleNumber);
 
         await dispatch(addTitleAction(formData))
+
       
+     
+        await dispatch((setCounterReducer));
         console.log('1 counter slice',counterSlice)
-        // await dispatch((setCounterReducer));
+        console.log('2 titleId after dispatch',titleId)
     };
 
     const updatehandleClick = async(passedData) => {
@@ -135,21 +139,22 @@ export default function Title({childCounter}) {
 
         await dispatch(deleteTitleAction(passedData))
       
-     
+        alert('Удалено')
         // await dispatch((setCounterReducer));
     };
 
     useEffect(()=>{
         setCounter(counterSlice)
-        
+        dispatch((setCounterReducer));
         // dispatch(getAllTitles())
 
-    },[counterSlice,allTitles,dispatch])
+    },[counterSlice,allTitles,dispatch,titleId])
 
 
     const handleClickButtonPlus = (e) => {
         // console.log('plus button start')
         setShowH1(true);
+        console.log('create subtitle pushed',e.target.value)
     }
     const handleClickButtonCreateTitle = (e) => {
       
@@ -240,7 +245,7 @@ export default function Title({childCounter}) {
             
           
 
-            {showH1 && <Subtitle  childCounter={counter} />}
+            {showH1 && <Subtitle  childCounter={counter} passedData={titleId} />}
             {showH2 && <Title childCounter={counter}/>}
         </div>
         ):(
@@ -265,7 +270,7 @@ export default function Title({childCounter}) {
   // console.log('allTitles.t_number',item.t_number,item.name)
  
 <div >
-    {/* <span> title number=  {item.t_number}   title name=  {item.name}, {item.id}</span> */}
+    <span> title number=  {item.t_number}   title name=  {item.name}, {item.id}</span>
     <Button style={{ width: '100%' }} color="dark" onClick={toggleAccordion}>
         
         <div className="d-flex justify-content-between">
@@ -293,7 +298,7 @@ export default function Title({childCounter}) {
         </Button>
 
 
-        {showH1 && <Subtitle  childCounter={counter}/>}
+        {showH1 && <Subtitle  childCounter={counter}  passedData={item.id}/>}
             {showH2 && <Title childCounter={counter}/>}
 </div>
 ))}

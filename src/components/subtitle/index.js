@@ -13,10 +13,10 @@ import {
   import FroalaEditorComponent from 'react-froala-wysiwyg';
   import { Editor } from '@tinymce/tinymce-react';
   import React, { useRef } from 'react';
-  import { addTitleAction } from "@/store/slices/authSlice";
+  import { addTitleAction,addSubTitleAction } from "@/store/slices/authSlice";
 
   import { templateReplaceValues, fields, newTemplate } from "../testdata";
-export default function Subtitle({childCounter}) {
+export default function Subtitle({childCounter,passedData}) {
   const dispatch=useDispatch()
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -24,6 +24,7 @@ export default function Subtitle({childCounter}) {
     const [titleCreate, setTitleCreate] = useState(false);
     const [showComponent, setShowComponent] = useState(true);
     const [titleName,setTitleName ] = useState('');
+    const [textInEditor,setTextInEditor]=useState('')
     // const [arr, setArr] = useState([<Title/>, <Title/>]);
     const [t_number,setT_number]=useState('')
     let [counter,setCounter]=useState(Number(childCounter))
@@ -53,20 +54,16 @@ export default function Subtitle({childCounter}) {
       
     };
     const handleClick = async(e) => {
-      setIsOpen(false)
-      e.stopPropagation();
-      console.log(e.target.value)
-        const formData = new FormData();
-        formData.append('name', titleName);
-        formData.append('p_number', counter);
-        formData.append('text', text);
-        formData.append('TitleId', passedID);
+      // setIsOpen(false)
+      // e.stopPropagation();
+      // console.log('handleClick= ','textInEditor= ',textInEditor,'passedData=',passedData)
+      // const formData = new FormData();
+      // formData.append('name', titleName);
+      // formData.append('p_number', counter);
+      // formData.append('text', textInEditor);
+      // formData.append('TitleId', String(passedData));
        
-      
-      
-
-        
-        await dispatch(addTitleAction(formData))
+      // await dispatch(addSubTitleAction(formData))
       
     };
 
@@ -86,10 +83,27 @@ export default function Subtitle({childCounter}) {
 
       const editorRef = useRef(null);
 
-      const log = () => {
-        if (editorRef.current) {
+      const log =  async() => {
+        console.log('log started')
+       
+         
           console.log(editorRef.current.getContent());
-        }
+          setTextInEditor(editorRef.current.getContent())
+          console.log('textEditorVAR=',textInEditor)
+
+          // setIsOpen(false)
+          // e.stopPropagation();
+          console.log('handleClick= ','textInEditor= ',textInEditor,'passedData=',passedData)
+          const formData = new FormData();
+          formData.append('name', titleName);
+          formData.append('p_number', counter);
+          formData.append('text', textInEditor);
+          formData.append('TitleId', String(passedData));
+          
+          await dispatch(addSubTitleAction(formData))
+
+          // setTextInEditor(editorRef.current.getContent())
+        
 
   
       };
@@ -97,18 +111,21 @@ export default function Subtitle({childCounter}) {
       const onChange=(e) =>{
         const content = e.target.getContent();
         console.log(content);
+        setTextInEditor(content)
       }
 
       return (
         <>
         {titleCreate ? (
+          
           <div className="ms-5">
         <Button style={{ width: '100%' }} color="secondary" onClick={toggleAccordion}>
           <div className="d-flex justify-content-between">
               <div className="justify-content-start">
               {counter} <input  onChange={handleTitleinputChange} type="text" placeholder="введине наименование" />
 
-                  <button onClick={handleClick}className="btn btn-info me-5">save</button>
+                  {/* <button onClick={handleClick} className="btn btn-info me-5">save</button> */}
+
               </div>
               {titleName}
               

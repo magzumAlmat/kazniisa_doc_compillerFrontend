@@ -18,7 +18,8 @@ const initialState = {
   allRevises:'',
   error:'',
   titleCounter: 0,
-  allTitles:[]
+  allTitles:[],
+  titleId:0
 };
 const token = localStorage.getItem('token');
 
@@ -220,6 +221,8 @@ export const authSlice = createSlice({
   setCounterReducer: (state, action) => {
     console.log('SetCounterReducer start', action.payload.t_number);
     state.titleCounter = action.payload.t_number;
+    state.titleId=action.payload.id
+    console.log('state.titleId from reducer=',state.titleId)
   },
 
   sendUserDataReducer: (state, action) => {
@@ -776,8 +779,8 @@ export const addCompanyAction=(name,description,bin,address,contactEmail,contact
     
       const token = localStorage.getItem("token");
       for (const value of formData.values()) {
-        console.log('formData Values',value);
-    }
+        console.log(' addSubTitleAction formData Values',value);
+       }
       
       if (!token) {
         console.error('Token not available');
