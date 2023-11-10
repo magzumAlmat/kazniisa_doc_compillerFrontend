@@ -19,7 +19,8 @@ const initialState = {
   error:'',
   titleCounter: 0,
   allTitles:[],
-  titleId:0
+  titleId:0,
+  allSubTitles:[]
 };
 const token = localStorage.getItem('token');
 
@@ -281,13 +282,18 @@ export const authSlice = createSlice({
         state.allTitles=action.payload
         
       },
+      getAllSubTitles:(state,action)=>{
+        console.log('getAllSubTitles-',action.payload)
+        state.allSubTitles=action.payload
+        
+      },
   }
 });
 
 // Action creators are generated for each case reducer function
 export const { sendErrorReducer,getAllRevisesReducer,ReviseReducer,authorize, logout, 
   editVar ,sendCodeReducer,sendUserDataReducer,setCurrentUser,getBannerByCompanyIdReducer,
-  getAllBannersReducer, loginReducer,addCompanyReducer,getAllCompaniesReducer, setCounterReducer,getAllTitles} = authSlice.actions;
+  getAllBannersReducer, loginReducer,addCompanyReducer,getAllCompaniesReducer, setCounterReducer,getAllTitles,getAllSubTitles} = authSlice.actions;
 
 // Use useEffect for token initialization
 // export const useTokenInitialization = () => {
@@ -344,6 +350,22 @@ export const  getAllTitlesAction= () => async(dispatch) => {
   ).then((response) => {
     console.log('1.2 getBannerByCompanyId response ',response.data)
     dispatch(getAllTitles(response.data));
+  });
+};
+
+export const  getAllSubTitlesAction= () => async(dispatch) => {
+  console.log('getAllSubTitlesAction started')
+  
+  const response = await axios.get(
+    `${END_POINT}/api/getsubtitles`,{
+      headers: {
+        // 'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json', // Set the content type to JSON
+      },
+    }
+  ).then((response) => {
+    console.log('getAllSubTitlesAction response ',response.data)
+    dispatch(getAllSubTitles(response.data));
   });
 };
 

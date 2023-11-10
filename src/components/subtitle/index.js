@@ -53,19 +53,7 @@ export default function Subtitle({childCounter,passedData}) {
       
       
     };
-    const handleClick = async(e) => {
-      // setIsOpen(false)
-      // e.stopPropagation();
-      // console.log('handleClick= ','textInEditor= ',textInEditor,'passedData=',passedData)
-      // const formData = new FormData();
-      // formData.append('name', titleName);
-      // formData.append('p_number', counter);
-      // formData.append('text', textInEditor);
-      // formData.append('TitleId', String(passedData));
-       
-      // await dispatch(addSubTitleAction(formData))
-      
-    };
+   
 
 
     const handleClickButtonPlus = (e) => {
@@ -86,32 +74,43 @@ export default function Subtitle({childCounter,passedData}) {
       const log =  async() => {
         console.log('log started')
        
-         
-          console.log(editorRef.current.getContent());
-          setTextInEditor(editorRef.current.getContent())
-          console.log('textEditorVAR=',textInEditor)
+         if (editorRef.getContent) {
 
-          // setIsOpen(false)
-          // e.stopPropagation();
-          console.log('handleClick= ','textInEditor= ',textInEditor,'passedData=',passedData)
-          const formData = new FormData();
-          formData.append('name', titleName);
-          formData.append('p_number', counter);
-          formData.append('text', textInEditor);
-          formData.append('TitleId', String(passedData));
           
-          await dispatch(addSubTitleAction(formData))
+         }
 
           // setTextInEditor(editorRef.current.getContent())
         
-
+         alert('Сабтайтл сохранился')
   
       };
 
-      const onChange=(e) =>{
+      const handleClick = () => {
+        const formData = new FormData();
+        formData.append('name', titleName);
+        formData.append('p_number', childCounter);
+        formData.append('text', textInEditor);
+        formData.append('TitleId', String(passedData));
+    
+        dispatch(addSubTitleAction(formData))
+          .then((response) => {
+            // Handle success, if needed
+            console.log('Subtitle added successfully:', response);
+          })
+          .catch((error) => {
+            // Handle error, if needed
+            console.error('Subtitle creation failed:', error);
+          });
+      };
+
+      const onChange= async(e) =>{
         const content = e.target.getContent();
         console.log(content);
         setTextInEditor(content)
+        // console.log(editorRef.current.getContent());
+        console.log('textEditorVAR=',textInEditor)
+
+         
       }
 
       return (
@@ -177,7 +176,7 @@ export default function Subtitle({childCounter,passedData}) {
                     onChange={onChange}
                     //outputFormat='text'
                 />
-                <button onClick={log} >SAVE with dispatch</button>
+                <button onClick={handleClick} >SAVE with dispatch</button>
             </Collapse>
             
 

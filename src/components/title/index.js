@@ -1,314 +1,445 @@
-
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
-    ButtonDropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem,
-    Button, Collapse, Card, CardBody
-  } from "reactstrap";
-  import Subtitle from '@/components/subtitle'
-  import { useSelector, useDispatch } from "react-redux";
-  import { useEffect, useState } from "react";
-  import { authorize } from "@/store/slices/authSlice";
-  import 'froala-editor/css/froala_style.min.css';
-  import 'froala-editor/css/froala_editor.pkgd.min.css';
-  import FroalaEditorComponent from 'react-froala-wysiwyg';
-  import { Editor } from '@tinymce/tinymce-react';
-  import React, { useRef } from 'react';
-  import { addTitleAction,getAllTitlesAction,getAllTitles,UpdateTitleAction ,deleteTitleAction} from "@/store/slices/authSlice";
-  import { setCounterReducer } from "@/store/slices/authSlice";
-  import { templateReplaceValues, fields, newTemplate } from "../testdata";
-  import TreeView from "../treenode";
-export default function Title({childCounter}) {
-  const dispatch=useDispatch()
-  let counterSlice= useSelector((state) => state.auth.titleCounter);
-  let titleId= useSelector((state) => state.auth.titleId);
-  const allTitles= useSelector((state) => state.auth.allTitles);
-  
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
-    const [showH1, setShowH1] = useState(false);
-    const [showH2, setShowH2] = useState(false);
-    const [titleCreate, setTitleCreate] = useState(false);
-    const [showComponent, setShowComponent] = useState(true);
-    const [titleName,setTitleName ] = useState('');
-    const [titleNumber,setTitleNumber ] = useState('');
-    const [arr, setArr] = useState([<Title/>, <Title/>]);
-    const [t_number,setT_number]=useState('')
-    let chCounter = Number(childCounter);
-    let [counter,setCounter]=useState(0)
-    
-    let counterclickPlusbutton=0
+  Button,
+  Collapse,
+  Card,
+  CardBody,
+  ButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
+import Subtitle from "@/components/subtitle";
+import {
+  addTitleAction,
+  getAllTitlesAction,
+  UpdateTitleAction,
+  deleteTitleAction,
+  setCounterReducer,
+  getAllTitles,
+  getAllSubTitlesAction
+} from "@/store/slices/authSlice";
+import TreeView from "../treenode";
 
-    let a=[]
+export default function Title({ childCounter }) {
+  const dispatch = useDispatch();
+  const counterSlice = useSelector((state) => state.auth.titleCounter);
+  const titleId = useSelector((state) => state.auth.titleId);
+  const allTitles = useSelector((state) => state.auth.allTitles);
+  console.log('1 allTitles=',allTitles)
+  const allSubTitles = useSelector((state) => state.auth.allSubTitles);
+  console.log('2 allSubtitles=',allSubTitles)
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [showH1, setShowH1] = useState(false);
+  const [showH2, setShowH2] = useState(false);
+  const [titleCreate, setTitleCreate] = useState(false);
+  const [showComponent, setShowComponent] = useState(true);
+  const [titleName, setTitleName] = useState("");
+  const [titleNumber, setTitleNumber] = useState("");
+  const [arr, setArr] = useState([]);
+  const [t_number, setT_number] = useState("");
+  const [counter, setCounter] = useState(0);
 
-    const handleClickCreate = () => {
-      
-     
+  const [allTitlesArray, setAllTitlesArray] = useState([]);
+  const [allSubTitlesArray, setAllSubTitlesArray] = useState([]);
 
-      setCounter(counterSlice)
-      
-      setTitleCreate(true);
-      counterclickPlusbutton=counterclickPlusbutton+1
-      console.log('handleClickCreate  started  a=',a,' 1.1 counter  =',counter,'counterclickPlusbutton=',counterclickPlusbutton)
-        if(Number(counterclickPlusbutton)==Number(counter)){
-       
-  
-          console.log('1.1 counter click =',counter,'counterclickPlusbutton=',counterclickPlusbutton)
-  
-        }
-        else(Number(counterclickPlusbutton)!=Number(counter))
-        {
-         
-          console.log('2 else vetka')  
+  useEffect(() => {
+    dispatch(getAllTitlesAction());
+    dispatch(getAllSubTitlesAction());
+  }, [dispatch]);
 
-          setCounter(Number(counter)+1)
-         
-          console.log('3 counter after click +',counter,'a===',a)
-        }
-    };
+  useEffect(() => {
+    setAllTitlesArray(allTitles);
+    setAllSubTitlesArray(allSubTitles)
+    console.log('in use effect allTitlesArray',allTitlesArray)
+  }, [allTitles,allSubTitles]);
 
-    useEffect(() => {
-        return () => {
-          dispatch(getAllTitlesAction())
-          console.log('Компонент удален');
-        };
-      }, [dispatch]);
+  const handleClickCreate = () => {
+    setCounter(counterSlice);
+    setTitleCreate(true);
+    console.log("after creating allTitles:", allTitles);
+  };
 
-      const handleComponentClick = () => {
-        setShowComponent(false);
-      };
+  const handleComponentClick = () => {
+    setShowComponent(false);
+  };
 
-      const handleTitleinputChange = async(e) => {
-        setIsOpen(false)
-        e.stopPropagation();
-        // console.log('handleclick start',e.target.value);
-        setTitleName(e.target.value)
-    };
+  const handleTitleinputChange = (e) => {
+    setIsOpen(false);
+    setTitleName(e.target.value);
+  };
 
-    const handleTitleAddT_number = async(e) => {
-      setIsOpen(false)
-      e.stopPropagation();
-      // console.log('handleclick start',e.target.value);
-      setTitleNumber(e.target.value)
+  const handleTitleAddT_number = (e) => {
+    setIsOpen(false);
+    setTitleNumber(e.target.value);
+  };
 
+  const handleClick = async (e) => {
+    setIsOpen(false);
+    const formData = new FormData();
+    formData.append("name", titleName);
+    formData.append("t_number", titleNumber);
+
+    await dispatch(addTitleAction(formData));
+    await dispatch(setCounterReducer);
+    await dispatch(getAllTitlesAction());
+  };
+
+  const updatehandleClick = async (passedData) => {
+    const formData = new FormData();
+    formData.append("passedId", passedData);
+    formData.append("name", titleName);
+    formData.append("t_number", titleNumber);
+
+    await dispatch(UpdateTitleAction(formData));
+  };
+
+  const detelehandleClick = async (passedData) => {
+    const formData = new FormData();
+    formData.append("passedId", passedData);
+
+    await dispatch(deleteTitleAction(passedData));
+    await dispatch(getAllTitlesAction());
 
   };
- 
-    const handleClick = async(e) => {
-      setIsOpen(false)
-      e.stopPropagation();
-        const formData = new FormData();
-        formData.append('name', titleName);
-        formData.append('t_number', titleNumber);
 
-        await dispatch(addTitleAction(formData))
+  useEffect(() => {
+    setCounter(counterSlice);
+  }, [counterSlice, dispatch, titleId]);
 
-      
-     
-        await dispatch((setCounterReducer));
-        console.log('1 counter slice',counterSlice)
-        console.log('2 titleId after dispatch',titleId)
-    };
+  const handleClickButtonPlus = () => {
+    setShowH1(true);
+  };
 
-    const updatehandleClick = async(passedData) => {
-      console.log('updatehandleClick started',passedData)
-      // console.log('handleclick start',e.target.value);
-      setIsOpen(false)
-      // e.stopPropagation();
-        const formData = new FormData();
-        formData.append('passedId', passedData);
-        formData.append('name', titleName);
-        formData.append('t_number', titleNumber);
+  const handleClickButtonCreateTitle = () => {
+    setShowH2(true);
+  };
 
-        await dispatch(UpdateTitleAction(formData))
-      
-        console.log('1 counter slice',counterSlice)
-        
-        // await dispatch((setCounterReducer));
-    };
+  const AccordionExample = () => {
+    const [isOpen, setIsOpen] = useState(false);
+  };
 
-    const detelehandleClick = async(passedData) => {
-      console.log('updatehandleClick started',passedData)
-      // console.log('handleclick start',e.target.value);
-      setIsOpen(false)
-      // e.stopPropagation();
-        const formData = new FormData();
-        formData.append('passedId', passedData);
-       
+  const toggleAccordion = () => {
+    setIsOpen(!isOpen);
+  };
 
-        await dispatch(deleteTitleAction(passedData))
-      
-        alert('Удалено')
-        // await dispatch((setCounterReducer));
-    };
-
-    useEffect(()=>{
-        setCounter(counterSlice)
-        dispatch((setCounterReducer));
-        // dispatch(getAllTitles())
-
-    },[counterSlice,allTitles,dispatch,titleId])
-
-
-    const handleClickButtonPlus = (e) => {
-        // console.log('plus button start')
-        setShowH1(true);
-        console.log('create subtitle pushed',e.target.value)
-    }
-    const handleClickButtonCreateTitle = (e) => {
-      
-      // console.log('conter========',counter)
-      // console.log('Child counter=====', chCounter)
-      
-      // console.log('conter after increment========',counter)
-      // console.log('TitleCounter from slice = ', counter)
-      // console.log('plus button start');
-      setShowH2(true);
-    
-  }
-
-    const AccordionExample = () => {
-      const [isOpen, setIsOpen] = useState(false);
-    }
-      const toggleAccordion = () => {
-        setIsOpen(!isOpen);
-      };
-
-
-      const editorRef = useRef(null);
-
-      const log = () => {
-        if (editorRef.current) {
-          console.log(editorRef.current.getContent());
-        }
-
-  
-      };
-
-      const onChange=(e) =>{
-        const content = e.target.getContent();
-        console.log(content);
-      }
-
-
-
-      // useEffect(()=>{
-      //   dispatch(getAllTitlesAction())
-      // },[allTitles])
-      
-      
-      // console.log('ALL TITLES=',allTitles)
-  
-      return (
-        <>
-         
-        {titleCreate ? (
-        
+  return (
+    <>
+      {titleCreate ? (
         <div>
-        <Button style={{ width: '100%' }} color="dark" onClick={toggleAccordion}>
-        
-          <div className="d-flex justify-content-between">
+          <div style={{ width: "100%",'backgroundColor':"gray" }} color="dark" onClick={toggleAccordion}>
+            <div className="d-flex justify-content-between">
               <div className="justify-content-start">
-             
-              {/* {showH2 && Number(counter)+1} */}
-              <input  onChange={handleTitleAddT_number} type="text" placeholder="введине #" style={{'width':'100px'}} className="me-2" />
-
-               <input  onChange={handleTitleinputChange} type="text" placeholder="введите наименование" />
-                  <button onClick={handleClick}className="btn btn-light me-5">save</button>
+                <input
+                  onChange={handleTitleAddT_number}
+                  type="text"
+                  placeholder="введине #"
+                  style={{ width: "100px" }}
+                  className="me-2"
+                />
+                <input onChange={handleTitleinputChange} type="text" placeholder="введите наименование" />
+                <button onClick={handleClick} className="btn btn-light me-5">
+                  save
+                </button>
               </div>
               {titleName}
-              
               <div className="justify-content-end">
-                  <button onClick={handleClickButtonCreateTitle} className="btn btn-light me-5">CreateNewTitle</button>
-                  <button onClick={handleClickButtonPlus} className="btn btn-light me-5">CreateNewSubtitle</button>
-                  <button className="btn btn-light">IN PROGRESS</button>
+                <button onClick={handleClickButtonCreateTitle} className="btn btn-light me-5">
+                  CreateNewTitle
+                </button>
+                <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
+                  CreateNewSubtitle
+                </button>
+                <button className="btn btn-light">IN PROGRESS</button>
               </div>
+            </div>
           </div>
-          </Button>
-      
-            {/* <Button style={{ width: '100%' }} color="primary" onClick={toggleAccordion}> */}
-                {/* <div className="d-flex justify-content-between">
-                    <div className="justify-content-start">
-                        3.1.1 <input  onChange={handleimputChange} type="text" placeholder="введине наименование" />
+          {showH1 && <Subtitle childCounter={counter} passedData={titleId} />}
+          {showH2 && counter < 5 && <Title childCounter={counter + 1} />}
+        </div>
+      ) : (
+        <>
+          <button onClick={handleClickCreate} className="btn btn-info me-5">
+            Добавить title
+          </button>
+        </>
+      )}
 
-                        <button onClick={handleClick}className="btn btn-info me-5">save</button>
-                    </div>
-                    {titleName}
-                    {counter}
-                    <div className="justify-content-end">
-                        <button onClick={handleClickButtonPlus} className="btn btn-info me-5">+</button>
-                        <button className="btn btn-secondary">IN PROGRESS</button>
-                    </div>
-                </div> */}
-            {/* </Button> */}
-            
+      <br />
+      <br />
+      <br />
+      <br />
+
+      <br />
+      <br />
+
+      <br />
+      <br />
+      <br />
+      <h1>Ваши данные</h1>
+      {/* {allTitlesArray.map((item) => (
+        console.log('item=',allTitlesArray),
+        <div key={item.id}>
+          <span>
+            title number= {item.t_number} title name= {item.name}, {item.id}
+          </span>
+          <div style={{ width: "100%" ,'backgroundColor':"gray"}} color="dark" onClick={toggleAccordion}>
+            <div className="d-flex justify-content-between">
+              <div className="justify-content-start">
+                <input
+                  onChange={handleTitleAddT_number}
+                  type="text"
+                  placeholder={item.t_number}
+                  style={{ width: "100px" }}
+                  className="me-2"
+                />
+                <input onChange={handleTitleinputChange} type="text" placeholder={item.name} />
+                <button onClick={() => updatehandleClick(item.id)} className="btn btn-light me-5">
+                  Изменить
+                </button>
+              </div>
+              {titleName}
+              <div className="justify-content-end">
+                <button onClick={handleClickCreate} className="btn btn-light me-5">
+                  CreateNewTitle
+                </button>
+                <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
+                  CreateNewSubtitle
+                </button>
+                <button className="btn btn-light" onClick={() => detelehandleClick(item.id)}>
+                  X
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {showH1 && <Subtitle childCounter={counter} passedData={item.id} />}
+          {showH2 && counter < 5 && <Title childCounter={counter + 1} />}
+        </div>
+      ))} */}
+
+
+
+{/* {allTitlesArray.map((item) => {
+    console.log('1 item=',item)
+  return (
+
+        allSubTitlesArray.map((item2)=>{
           
 
-            {showH1 && <Subtitle  childCounter={counter} passedData={titleId} />}
-            {showH2 && <Title childCounter={counter}/>}
-        </div>
-        ):(
-            <>
-            <button onClick={handleClickCreate} className="btn btn-info me-5">Добавить title</button>
-            </>
+    
+
+
+
+        
+
+             if (item.id == item2.TitleId) {
+              console.log('vetka true staeted'),
+              console.log('item.id=', item.id, 'item2', item2.TitleId);
+              return (
+          <div key={item.id}>
+             
+            <div style={{ width: "100%" ,'backgroundColor':"gray"}} color="dark" onClick={toggleAccordion}>
+              <div className="d-flex justify-content-between">
+                <div className="justify-content-start">
+                  <input
+                    onChange={handleTitleAddT_number}
+                    type="text"
+                    placeholder={item.t_number}
+                    style={{ width: "100px" }}
+                    className="me-2"
+                  />
+                  <input onChange={handleTitleinputChange} type="text" placeholder={item.name} />
+                  <button onClick={() => updatehandleClick(item.id)} className="btn btn-light me-5">
+                    Изменить
+                  </button>
+                </div>
+                {titleName}
+                <div className="justify-content-end">
+                  <button onClick={handleClickCreate} className="btn btn-light me-5">
+                    CreateNewTitle
+                  </button>
+                  <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
+                    CreateNewSubtitle
+                  </button>
+                  <button className="btn btn-light" onClick={() => detelehandleClick(item.id)}>
+                    X
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ width: "100%" ,'backgroundColor':"gray"}} color="dark" onClick={toggleAccordion} className="ms-5">
+              <div className="d-flex justify-content-between">
+                <div className="justify-content-start">
+                  <input
+                    onChange={handleTitleAddT_number}
+                    type="text"
+                    placeholder={item2.p_number}
+                    style={{ width: "100px" }}
+                    className="me-2"
+                  />
+                  <input onChange={handleTitleinputChange} type="text" placeholder={item2.name} />
+                  <button onClick={() => updatehandleClick(item2.id)} className="btn btn-light me-5">
+                    Изменить
+                  </button>
+                </div>
+                {titleName}
+                <div className="justify-content-end">
+                  <button onClick={handleClickCreate} className="btn btn-light me-5">
+                    CreateNewTitle
+                  </button>
+                  <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
+                    CreateNewSubtitle
+                  </button>
+                  <button className="btn btn-light" onClick={() => detelehandleClick(item2.id)}>
+                    X
+                  </button>
+                </div>
+              </div>
+            </div>
+
+
+
+
+          
+
+            {showH1 && <Subtitle childCounter={counter} passedData={item.id} />}
+            {showH2 && counter < 5 && <Title childCounter={counter + 1} />} 
+          </div>
+      
         )}
-<br />
-<br />
-<br />
-<br />
-
-<br />
-<br />
-
-
-<br />
-<br />
-<br />
-<h1>Ваши данные</h1>
-{allTitles.map((item)=>(
-  // console.log('allTitles.t_number',item.t_number,item.name)
- 
-<div >
-    <span> title number=  {item.t_number}   title name=  {item.name}, {item.id}</span>
-    <Button style={{ width: '100%' }} color="dark" onClick={toggleAccordion}>
+          else(item.id != item2.TitleId)
+          console.log('else vetka',item)
+          {
+        return(<>
         
-        <div className="d-flex justify-content-between">
-            <div className="justify-content-start">
-           
-            {/* {showH2 && Number(counter)+1} */}
-            <input  onChange={handleTitleAddT_number} type="text" placeholder={item.t_number} style={{'width':'100px'}} className="me-2" />
-
-
-             <input  onChange={handleTitleinputChange} type="text" placeholder={item.name} />
-
-                 
-                   <button onClick={() => updatehandleClick(item.id)}className="btn btn-light me-5">Изменить</button> 
-            </div>
-            {titleName}
+             
+              <div style={{ width: "100%" ,'backgroundColor':"gray"}} color="dark" onClick={toggleAccordion}>
+                <div className="d-flex justify-content-between">
+                  <div className="justify-content-start">
+                    <input
+                      onChange={handleTitleAddT_number}
+                      type="text"
+                      placeholder={item.t_number}
+                      style={{ width: "100px" }}
+                      className="me-2"
+                    />
+                    <input onChange={handleTitleinputChange} type="text" placeholder={item.name} />
+                    <button onClick={() => updatehandleClick(item.id)} className="btn btn-light me-5">
+                      Изменить
+                    </button>
+                  </div>
+                  {titleName}
+                  <div className="justify-content-end">
+                    <button onClick={handleClickCreate} className="btn btn-light me-5">
+                      CreateNewTitle
+                    </button>
+                    <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
+                      CreateNewSubtitle
+                    </button>
+                    <button className="btn btn-light" onClick={() => detelehandleClick(item.id)}>
+                      X
+                    </button>
+                  </div>
+                </div>
+              </div>
+          
+        </>)
             
-            <div className="justify-content-end">
-                <button onClick={handleClickCreate} className="btn btn-light me-5">CreateNewTitle</button>
-                <button onClick={handleClickButtonPlus} className="btn btn-light me-5">CreateNewSubtitle</button>
-                <button className="btn btn-light">IN PROGRESS</button>
-                <button className="btn btn-light" onClick={() => detelehandleClick(item.id)}>X</button>
+          }
+     
+          })
+  )
+        })}  */}
 
+
+      {allTitlesArray.map((item) => {
+        console.log('1 item=', item);
+
+        const matchingSubTitles = allSubTitlesArray.filter((item2) => item2.TitleId === item.id);
+
+        return (
+          <div key={item.id}>
+            {/* Your title rendering code... */}
+            <div style={{ width: "100%" ,'backgroundColor':"gray"}} color="dark" onClick={toggleAccordion}>
+              <div className="d-flex justify-content-between">
+                <div className="justify-content-start">
+                  <input
+                    onChange={handleTitleAddT_number}
+                    type="text"
+                    placeholder={item.t_number}
+                    style={{ width: "100px" }}
+                    className="me-2"
+                  />
+                  <input onChange={handleTitleinputChange} type="text" placeholder={item.name} />
+                  <button onClick={() => updatehandleClick(item.id)} className="btn btn-light me-5">
+                    Изменить
+                  </button>
+                </div>
+                {titleName}
+                <div className="justify-content-end">
+                  <button onClick={handleClickCreate} className="btn btn-light me-5">
+                    CreateNewTitle
+                  </button>
+                  <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
+                    CreateNewSubtitle
+                  </button>
+                  <button className="btn btn-light" onClick={() => detelehandleClick(item.id)}>
+                    X
+                  </button>
+                </div>
+              </div>
             </div>
-        </div>
-        </Button>
+
+            {matchingSubTitles.map((subTitle) => (
+              <div key={subTitle.id}>
+           
+
+            <div style={{ width: "100%" ,'backgroundColor':"gray"}} color="dark" onClick={toggleAccordion} className="ms-5">
+              <div className="d-flex justify-content-between">
+                <div className="justify-content-start">
+                  <input
+                    onChange={handleTitleAddT_number}
+                    type="text"
+                    placeholder={subTitle.p_number}
+                    style={{ width: "100px" }}
+                    className="me-2"
+                  />
+                  <input onChange={handleTitleinputChange} type="text" placeholder={subTitle.name} />
+                  <button onClick={() => updatehandleClick(subTitle.id)} className="btn btn-light me-5">
+                    Изменить
+                  </button>
+                </div>
+                {titleName}
+                <div className="justify-content-end">
+                  <button onClick={handleClickCreate} className="btn btn-light me-5">
+                    CreateNewTitle
+                  </button>
+                  <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
+                    CreateNewSubtitle
+                  </button>
+                  <button className="btn btn-light" onClick={() => detelehandleClick(subTitle.id)}>
+                    X
+                  </button>
+                </div>
+              </div>
+            </div>
 
 
-        {showH1 && <Subtitle  childCounter={counter}  passedData={item.id}/>}
-            {showH2 && <Title childCounter={counter}/>}
-</div>
-))}
+              </div>
+            ))}
 
+         
 
-       
-        {/* <TreeView/> */}
-        
-        </>
-        
-        
-    );
-  }
+{showH1 && <Subtitle childCounter={counter} passedData={item.id} />}
+            {showH2 && counter < 5 && <Title childCounter={counter + 1} />} 
+          </div>
+        );
+      })}
+      {/* <TreeView/> */}
+    </>
+  );
+}
