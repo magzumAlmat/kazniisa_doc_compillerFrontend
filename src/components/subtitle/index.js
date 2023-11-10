@@ -143,7 +143,7 @@ export default function Subtitle({childCounter,passedData}) {
               {titleName}
               
               <div className="justify-content-end">
-                  <button onClick={handleClickButtonPlus} className="btn btn-info me-5">+</button>
+                  {/* <button onClick={handleClickButtonPlus} className="btn btn-info me-5">+</button> */}
                   <button className="btn btn-secondary">IN PROGRESS</button>
               </div>
           </div>

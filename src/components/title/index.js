@@ -21,7 +21,8 @@ import {
   getAllSubTitlesAction
 } from "@/store/slices/authSlice";
 import TreeView from "../treenode";
-
+import { Editor } from '@tinymce/tinymce-react';
+import { templateReplaceValues, fields, newTemplate } from "../testdata";
 export default function Title({ childCounter }) {
   const dispatch = useDispatch();
   const counterSlice = useSelector((state) => state.auth.titleCounter);
@@ -132,10 +133,19 @@ export default function Title({ childCounter }) {
   };
 
   const toggleAccordion = () => {
+    console.log('Сработал клик по сабтайтлу')
     setIsOpen(!isOpen);
   };
 
-  
+  const onChange= async(e) =>{
+    const content = e.target.getContent();
+    console.log(content);
+    // setTextInEditor(content)
+    // console.log(editorRef.current.getContent());
+    // console.log('textEditorVAR=',textInEditor)
+
+     
+  }
 
   return (
     <>
@@ -447,6 +457,34 @@ export default function Title({ childCounter }) {
               </div>
             </div>
 
+            <Collapse isOpen={isOpen}>
+                {/* <FroalaEditorComponent tag="textarea" /> */}
+                <Editor
+                    initialValue={subTitle.text}
+                    apiKey='rn7c2nhyq6sboqijw5xcm9xtw3dr4koarjjjlyvklnr35u2r'
+                    init={{
+                    selector: "#tiny",
+                    plugins: "link image code table noneditable template hr importcss",
+                    menubar: " format table tools",
+                    noneditable_noneditable_class: "mceNonEditable myClass",
+                    toolbar:
+                        "image undo redo | hr | bold italic | alignleft aligncenter alignright | template | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol",
+                    noneditable_regexp: /{{([^}]*)}}/g,
+                    height: 500,
+                    template_replace_values: templateReplaceValues,
+                    template_preview_replace_values: templateReplaceValues,
+                    templates: fields,
+                    contextmenu: "table",
+                    branding: false
+                    //skin_url: "/skins",
+                    // skin: "TESTSKIN",
+                    //content_css: "TESTSKIN"
+                    }}
+                    onChange={onChange}
+                    //outputFormat='text'
+                />
+                <button onClick={handleClick} >SAVE with dispatch</button>
+            </Collapse>
 
               </div>
             ))}
