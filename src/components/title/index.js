@@ -50,6 +50,7 @@ export default function Title({ childCounter }) {
   const [allTitlesArray, setAllTitlesArray] = useState([]);
   const [allSubTitlesArray, setAllSubTitlesArray] = useState([]);
 
+  const [disableButton,setDisableButton]=useState(true)
   useEffect(() => {
     dispatch(getAllTitlesAction());
     dispatch(getAllSubTitlesAction());
@@ -90,6 +91,7 @@ export default function Title({ childCounter }) {
     await dispatch(addTitleAction(formData));
     await dispatch(setCounterReducer);
     await dispatch(getAllTitlesAction());
+    setDisableButton(false)
   };
 
   const updatehandleClick = async (passedData) => {
@@ -168,10 +170,10 @@ export default function Title({ childCounter }) {
               </div>
               {titleName}
               <div className="justify-content-end">
-                <button onClick={handleClickButtonCreateTitle} className="btn btn-light me-5">
+                <button onClick={handleClickButtonCreateTitle} className="btn btn-light me-5" disabled={disableButton}>
                   CreateNewTitle
                 </button>
-                <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
+                <button onClick={handleClickButtonPlus} className="btn btn-light me-5" disabled={disableButton}>
                   CreateNewSubtitle
                 </button>
                 <button className="btn btn-light">IN PROGRESS</button>
@@ -410,12 +412,13 @@ export default function Title({ childCounter }) {
                 </div>
                 {titleName}
                 <div className="justify-content-end">
-                  <button onClick={handleClickCreate} className="btn btn-light me-5">
+                  <button onClick={handleClickCreate} className="btn btn-light me-5" >
                     CreateNewTitle
                   </button>
                   <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
                     CreateNewSubtitle
                   </button>
+
                   <button className="btn btn-light" onClick={() => detelehandleClick(item.id)}>
                     X
                   </button>
@@ -427,7 +430,8 @@ export default function Title({ childCounter }) {
               <div key={subTitle.id}>
            
 
-            <div style={{ width: "100%" ,'backgroundColor':"gray"}} color="dark" onClick={toggleAccordion} className="ms-5">
+            <div style={{ width: "100%" ,'backgroundColor':"gray"}} color="dark"  className="ms-5">
+            {/* <div style={{ width: "100%",'backgroundColor':"gray" }} color="dark"  > */}
               <div className="d-flex justify-content-between">
                 <div className="justify-content-start">
                   <input
@@ -442,6 +446,7 @@ export default function Title({ childCounter }) {
                     Изменить
                   </button>
                 </div>
+                <Button onClick={toggleAccordion}>open editor</Button>
                 {titleName}
                 <div className="justify-content-end">
                   <button onClick={handleClickCreate} className="btn btn-light me-5">

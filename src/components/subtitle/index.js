@@ -124,7 +124,7 @@ export default function Subtitle({childCounter,passedData}) {
         {titleCreate ? (
           
           <div className="ms-5">
-        <Button style={{ width: '100%' }} color="secondary" onClick={toggleAccordion}>
+        <div style={{ width: "100%",'backgroundColor':"gray" }} color="dark"  >
           <div className="d-flex justify-content-between">
               <div className="justify-content-start">
               <input
@@ -141,13 +141,13 @@ export default function Subtitle({childCounter,passedData}) {
 
               </div>
               {titleName}
-              
+              <Button onClick={toggleAccordion}>open editor</Button>
               <div className="justify-content-end">
                   {/* <button onClick={handleClickButtonPlus} className="btn btn-info me-5">+</button> */}
                   <button className="btn btn-secondary">IN PROGRESS</button>
               </div>
           </div>
-          </Button>
+          </div>
       
             {/* <Button style={{ width: '100%' }} color="primary" onClick={toggleAccordion}> */}
                 {/* <div className="d-flex justify-content-between">
