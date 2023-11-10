@@ -27,6 +27,7 @@ export default function Subtitle({childCounter,passedData}) {
     const [textInEditor,setTextInEditor]=useState('')
     // const [arr, setArr] = useState([<Title/>, <Title/>]);
     const [t_number,setT_number]=useState('')
+    const[SubtitleP_Number,setSubtitleP_Number]=useState('')
     let [counter,setCounter]=useState(Number(childCounter))
 
     const handleClickCreate = () => {
@@ -86,9 +87,10 @@ export default function Subtitle({childCounter,passedData}) {
       };
 
       const handleClick = () => {
+        console.log('passedData==========',passedData)
         const formData = new FormData();
         formData.append('name', titleName);
-        formData.append('p_number', childCounter);
+        formData.append('p_number', String(SubtitleP_Number));
         formData.append('text', textInEditor);
         formData.append('TitleId', String(passedData));
     
@@ -112,6 +114,10 @@ export default function Subtitle({childCounter,passedData}) {
 
          
       }
+      const setSubTitlePNumber = (e) => {
+        setIsOpen(false);
+        setSubtitleP_Number(e.target.value);
+      };
 
       return (
         <>
@@ -121,7 +127,15 @@ export default function Subtitle({childCounter,passedData}) {
         <Button style={{ width: '100%' }} color="secondary" onClick={toggleAccordion}>
           <div className="d-flex justify-content-between">
               <div className="justify-content-start">
-              {counter} <input  onChange={handleTitleinputChange} type="text" placeholder="введине наименование" />
+              <input
+                  onChange={setSubTitlePNumber}
+                  type="text"
+                  placeholder="введине #"
+                  style={{ width: "100px" }}
+                  className="me-2"
+                />
+
+              <input  onChange={handleTitleinputChange} type="text" placeholder="введине наименование" />
 
                   {/* <button onClick={handleClick} className="btn btn-info me-5">save</button> */}
 

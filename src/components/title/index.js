@@ -26,6 +26,8 @@ export default function Title({ childCounter }) {
   const dispatch = useDispatch();
   const counterSlice = useSelector((state) => state.auth.titleCounter);
   const titleId = useSelector((state) => state.auth.titleId);
+  console.log('0 titleID=',titleId)
+  const [TITLEPASSID,SETTITLEPASSID]=useState(0)
   const allTitles = useSelector((state) => state.auth.allTitles);
   console.log('1 allTitles=',allTitles)
   const allSubTitles = useSelector((state) => state.auth.allSubTitles);
@@ -34,6 +36,7 @@ export default function Title({ childCounter }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showH1, setShowH1] = useState(false);
   const [showH2, setShowH2] = useState(false);
+  const [arrayOfSubTitlesComponent,setarrayOfSubTitlesComponent]=useState(0)
   const [titleCreate, setTitleCreate] = useState(false);
   const [showComponent, setShowComponent] = useState(true);
   const [titleName, setTitleName] = useState("");
@@ -41,6 +44,7 @@ export default function Title({ childCounter }) {
   const [arr, setArr] = useState([]);
   const [t_number, setT_number] = useState("");
   const [counter, setCounter] = useState(0);
+  const [subtitleCount, setSubtitleCount] = useState(0);
 
   const [allTitlesArray, setAllTitlesArray] = useState([]);
   const [allSubTitlesArray, setAllSubTitlesArray] = useState([]);
@@ -110,7 +114,13 @@ export default function Title({ childCounter }) {
   }, [counterSlice, dispatch, titleId]);
 
   const handleClickButtonPlus = () => {
-    setShowH1(true);
+    // setShowH1(true);
+    setSubtitleCount(subtitleCount + 1);
+    
+    if (TITLEPASSID==0){
+    SETTITLEPASSID(titleId)
+    }
+
   };
 
   const handleClickButtonCreateTitle = () => {
@@ -124,6 +134,8 @@ export default function Title({ childCounter }) {
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
   };
+
+  
 
   return (
     <>
@@ -156,7 +168,14 @@ export default function Title({ childCounter }) {
               </div>
             </div>
           </div>
-          {showH1 && <Subtitle childCounter={counter} passedData={titleId} />}
+
+          {Array.from({ length: subtitleCount }).map((_, index) => (
+            <Subtitle key={index} childCounter={counter} passedData={TITLEPASSID} />
+          ))}
+
+
+
+          {/* {showH1 && <Subtitle childCounter={counter} passedData={titleId} />} */}
           {showH2 && counter < 5 && <Title childCounter={counter + 1} />}
         </div>
       ) : (
@@ -432,9 +451,10 @@ export default function Title({ childCounter }) {
               </div>
             ))}
 
+
          
 
-{showH1 && <Subtitle childCounter={counter} passedData={item.id} />}
+            {showH1 && <Subtitle childCounter={counter} passedData={item.id} />}
             {showH2 && counter < 5 && <Title childCounter={counter + 1} />} 
           </div>
         );
