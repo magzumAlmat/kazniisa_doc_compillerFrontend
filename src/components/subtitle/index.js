@@ -86,7 +86,7 @@ export default function Subtitle({childCounter,passedData}) {
   
       };
 
-      const handleClick = () => {
+      const handleClick = async() => {
         console.log('passedData==========',passedData)
         const formData = new FormData();
         formData.append('name', titleName);
@@ -94,7 +94,7 @@ export default function Subtitle({childCounter,passedData}) {
         formData.append('text', textInEditor);
         formData.append('TitleId', String(passedData));
     
-        dispatch(addSubTitleAction(formData))
+        await dispatch(addSubTitleAction(formData))
           .then((response) => {
             // Handle success, if needed
             console.log('Subtitle added successfully:', response);
@@ -103,6 +103,7 @@ export default function Subtitle({childCounter,passedData}) {
             // Handle error, if needed
             console.error('Subtitle creation failed:', error);
           });
+          alert('subtitle added')
       };
 
       const onChange= async(e) =>{
@@ -140,8 +141,9 @@ export default function Subtitle({childCounter,passedData}) {
                   {/* <button onClick={handleClick} className="btn btn-info me-5">save</button> */}
 
               </div>
-              {titleName}
-              <Button onClick={toggleAccordion}>open editor</Button>
+              {/* {titleName} */}
+              {isOpen==true? <Button onClick={toggleAccordion}>close editor</Button>:<Button onClick={toggleAccordion}>open editor</Button> }
+               
               <div className="justify-content-end">
                   {/* <button onClick={handleClickButtonPlus} className="btn btn-info me-5">+</button> */}
                   <button className="btn btn-secondary">IN PROGRESS</button>

@@ -18,7 +18,7 @@ import {
   deleteTitleAction,
   setCounterReducer,
   getAllTitles,
-  getAllSubTitlesAction
+  getAllSubTitlesAction,UpdateSubTitleAction
 } from "@/store/slices/authSlice";
 import TreeView from "../treenode";
 import { Editor } from '@tinymce/tinymce-react';
@@ -75,11 +75,13 @@ export default function Title({ childCounter }) {
   const handleTitleinputChange = (e) => {
     setIsOpen(false);
     setTitleName(e.target.value);
+    e.stopPropagation();
   };
 
   const handleTitleAddT_number = (e) => {
     setIsOpen(false);
     setTitleNumber(e.target.value);
+    e.stopPropagation();
   };
 
   const handleClick = async (e) => {
@@ -101,6 +103,17 @@ export default function Title({ childCounter }) {
     formData.append("t_number", titleNumber);
 
     await dispatch(UpdateTitleAction(formData));
+  };
+
+  const updateSUBTITLEhandleClick = async (passedData) => {
+    console.log('passedData=',passedData)
+    const formData = new FormData();
+    formData.append("passedId", passedData);
+    formData.append("name", titleName);
+    formData.append("p_number", titleNumber);
+
+    await dispatch(UpdateSubTitleAction(formData));
+    await dispatch(getAllSubTitlesAction());
   };
 
   const detelehandleClick = async (passedData) => {
@@ -153,7 +166,7 @@ export default function Title({ childCounter }) {
     <>
       {titleCreate ? (
         <div>
-          <div style={{ width: "100%",'backgroundColor':"gray" }} color="dark" onClick={toggleAccordion}>
+          <div style={{ width: "100%",'backgroundColor':"gray" }} color="dark" >
             <div className="d-flex justify-content-between">
               <div className="justify-content-start">
                 <input
@@ -168,7 +181,7 @@ export default function Title({ childCounter }) {
                   save
                 </button>
               </div>
-              {titleName}
+              {/* {titleName} */}
               <div className="justify-content-end">
                 <button onClick={handleClickButtonCreateTitle} className="btn btn-light me-5" disabled={disableButton}>
                   CreateNewTitle
@@ -410,14 +423,14 @@ export default function Title({ childCounter }) {
                     Изменить
                   </button>
                 </div>
-                {titleName}
+                {/* {titleName} */}
                 <div className="justify-content-end">
-                  <button onClick={handleClickCreate} className="btn btn-light me-5" >
+                  {/* <button onClick={handleClickCreate} className="btn btn-light me-5" >
                     CreateNewTitle
                   </button>
                   <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
                     CreateNewSubtitle
-                  </button>
+                  </button> */}
 
                   <button className="btn btn-light" onClick={() => detelehandleClick(item.id)}>
                     X
@@ -426,6 +439,10 @@ export default function Title({ childCounter }) {
               </div>
             </div>
 
+
+
+
+              {/* Сабтайтлы */}
             {matchingSubTitles.map((subTitle) => (
               <div key={subTitle.id}>
            
@@ -442,19 +459,19 @@ export default function Title({ childCounter }) {
                     className="me-2"
                   />
                   <input onChange={handleTitleinputChange} type="text" placeholder={subTitle.name} />
-                  <button onClick={() => updatehandleClick(subTitle.id)} className="btn btn-light me-5">
+                  <button onClick={() => updateSUBTITLEhandleClick(subTitle.id)} className="btn btn-light me-5">
                     Изменить
                   </button>
                 </div>
-                <Button onClick={toggleAccordion}>open editor</Button>
-                {titleName}
+                {isOpen==true? <Button onClick={toggleAccordion}>close editor</Button>:<Button onClick={toggleAccordion}>open editor</Button> }
+                {/* {titleName} */}
                 <div className="justify-content-end">
-                  <button onClick={handleClickCreate} className="btn btn-light me-5">
+                  {/* <button onClick={handleClickCreate} className="btn btn-light me-5">
                     CreateNewTitle
-                  </button>
-                  <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
+                  </button> */}
+                  {/* <button onClick={handleClickButtonPlus} className="btn btn-light me-5">
                     CreateNewSubtitle
-                  </button>
+                  </button> */}
                   <button className="btn btn-light" onClick={() => detelehandleClick(subTitle.id)}>
                     X
                   </button>
