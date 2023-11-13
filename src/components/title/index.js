@@ -51,6 +51,34 @@ export default function Title({ childCounter }) {
   const [allSubTitlesArray, setAllSubTitlesArray] = useState([]);
 
   const [disableButton,setDisableButton]=useState(true)
+
+  const [editorStates, setEditorStates] = useState({});
+
+  const [textInEditor,setTextInEditor]=useState('')
+  // const toggleAccordion = (index) => {
+  //   console.log('Сработал клик по сабтайтлу index= ',index)
+  //   setIsOpen(!isOpen);
+  //   setAccordionsState((prevAccordionsState) => {
+  //     const newAccordionsState = [...prevAccordionsState];
+  //     newAccordionsState[index] = !newAccordionsState[index];
+  //     console.log('newAccordionState=',index,newAccordionsState)
+  //     return newAccordionsState;
+  //   });
+  // };
+  const toggleAccordion = (subTitleId) => {
+   
+    setEditorStates((prevStates) => {
+      setIsOpen(!isOpen);
+      return {
+        ...prevStates,
+        
+        [subTitleId]: !prevStates[subTitleId],
+        
+      };
+      
+    });
+  };
+
   useEffect(() => {
     dispatch(getAllTitlesAction());
     dispatch(getAllSubTitlesAction());
@@ -84,16 +112,32 @@ export default function Title({ childCounter }) {
     e.stopPropagation();
   };
 
-  const handleClick = async (e) => {
+  const handleClick = async (e,id) => {
+    console.log('subtitleEdit id=',id)
     setIsOpen(false);
     const formData = new FormData();
-    formData.append("name", titleName);
     formData.append("t_number", titleNumber);
+    formData.append("name", titleName);
+  
+
+
 
     await dispatch(addTitleAction(formData));
     await dispatch(setCounterReducer);
     await dispatch(getAllTitlesAction());
+
     setDisableButton(false)
+  };
+
+  const handleUpdateSubtitleClick= async (passedData) => {
+    console.log('handleUpdateSubtitleClick started passedData=',passedData,'textinEditor=',textInEditor)
+    const formData = new FormData();
+    formData.append("passedId", passedData);
+    // formData.append("name", titleName);
+    // formData.append("p_number", titleNumber);
+    formData.append("text", textInEditor);
+
+    await dispatch(UpdateSubTitleAction(formData));
   };
 
   const updatehandleClick = async (passedData) => {
@@ -147,14 +191,15 @@ export default function Title({ childCounter }) {
     const [isOpen, setIsOpen] = useState(false);
   };
 
-  const toggleAccordion = () => {
-    console.log('Сработал клик по сабтайтлу')
-    setIsOpen(!isOpen);
-  };
+  // const toggleAccordion = () => {
+  //   console.log('Сработал клик по сабтайтлу')
+  //   setIsOpen(!isOpen);
+  // };
 
   const onChange= async(e) =>{
     const content = e.target.getContent();
     console.log(content);
+    setTextInEditor(content)
     // setTextInEditor(content)
     // console.log(editorRef.current.getContent());
     // console.log('textEditorVAR=',textInEditor)
@@ -400,15 +445,15 @@ export default function Title({ childCounter }) {
         })}  */}
 
 
-      {allTitlesArray.map((item) => {
-        console.log('1 item=', item);
+      {allTitlesArray.map((item,index) => {
+        // console.log('1 item=', item);
 
         const matchingSubTitles = allSubTitlesArray.filter((item2) => item2.TitleId === item.id);
 
         return (
           <div key={item.id}>
             {/* Your title rendering code... */}
-            <div style={{ width: "100%" ,'backgroundColor':"gray"}} color="dark" onClick={toggleAccordion}>
+            <div style={{ width: "100%" ,'backgroundColor':"gray"}} color="dark" onClick={toggleAccordion[index]}>
               <div className="d-flex justify-content-between">
                 <div className="justify-content-start">
                   <input
@@ -463,7 +508,13 @@ export default function Title({ childCounter }) {
                     Изменить
                   </button>
                 </div>
-                {isOpen==true? <Button onClick={toggleAccordion}>close editor</Button>:<Button onClick={toggleAccordion}>open editor</Button> }
+                {/* {isOpen ? (
+  <Button onClick={() => toggleAccordion(subTitle.id)}>close editor</Button>
+) : (
+  <Button onClick={() => toggleAccordion(subTitle.id)}>open editor</Button>
+)} */}
+                {isOpen==true? <Button onClick={() => toggleAccordion(subTitle.id)}>close editor</Button>
+                :<Button onClick={() => toggleAccordion(subTitle.id)}>open editor</Button> }
                 {/* {titleName} */}
                 <div className="justify-content-end">
                   {/* <button onClick={handleClickCreate} className="btn btn-light me-5">
@@ -479,7 +530,9 @@ export default function Title({ childCounter }) {
               </div>
             </div>
 
-            <Collapse isOpen={isOpen}>
+            <Collapse isOpen={editorStates[subTitle.id]}>
+              
+
                 {/* <FroalaEditorComponent tag="textarea" /> */}
                 <Editor
                     initialValue={subTitle.text}
@@ -505,7 +558,9 @@ export default function Title({ childCounter }) {
                     onChange={onChange}
                     //outputFormat='text'
                 />
-                <button onClick={handleClick} >SAVE with dispatch</button>
+
+                {subTitle.text!=null ? <button onClick={() => handleUpdateSubtitleClick(subTitle.id)}>UPDATE with dispatch</button>:
+                <button onClick={() => handleClick(subTitle.id)}>SAVE with dispatch</button>}
             </Collapse>
 
               </div>
