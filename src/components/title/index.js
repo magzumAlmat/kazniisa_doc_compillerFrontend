@@ -18,19 +18,23 @@ import {
   deleteTitleAction,
   setCounterReducer,
   getAllTitles,
+  UpdateTitleNumberAction,
   getAllSubTitlesAction,UpdateSubTitleAction
 } from "@/store/slices/authSlice";
 import TreeView from "../treenode";
 import { Editor } from '@tinymce/tinymce-react';
 import { templateReplaceValues, fields, newTemplate } from "../testdata";
 export default function Title({ childCounter }) {
+  
   const dispatch = useDispatch();
   const counterSlice = useSelector((state) => state.auth.titleCounter);
   const titleId = useSelector((state) => state.auth.titleId);
   console.log('0 titleID=',titleId)
   const [TITLEPASSID,SETTITLEPASSID]=useState(0)
   const allTitles = useSelector((state) => state.auth.allTitles);
-  console.log('1 allTitles=',allTitles)
+ 
+    
+    
   const allSubTitles = useSelector((state) => state.auth.allSubTitles);
   console.log('2 allSubtitles=',allSubTitles)
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -46,7 +50,8 @@ export default function Title({ childCounter }) {
   const [t_number, setT_number] = useState("");
   const [counter, setCounter] = useState(0);
   const [subtitleCount, setSubtitleCount] = useState(0);
-
+  const arrayOfRefresh=[]
+  const arrayOfRefreshedItems=[]
   const [allTitlesArray, setAllTitlesArray] = useState([]);
   const [allSubTitlesArray, setAllSubTitlesArray] = useState([]);
 
@@ -55,6 +60,7 @@ export default function Title({ childCounter }) {
   const [editorStates, setEditorStates] = useState({});
 
   const [textInEditor,setTextInEditor]=useState('')
+  let arrayOfREFRESHCHANGED=false
   // const toggleAccordion = (index) => {
   //   console.log('Сработал клик по сабтайтлу index= ',index)
   //   setIsOpen(!isOpen);
@@ -82,13 +88,22 @@ export default function Title({ childCounter }) {
   useEffect(() => {
     dispatch(getAllTitlesAction());
     dispatch(getAllSubTitlesAction());
+    
   }, [dispatch]);
 
   useEffect(() => {
     setAllTitlesArray(allTitles);
     setAllSubTitlesArray(allSubTitles)
     console.log('in use effect allTitlesArray',allTitlesArray)
-  }, [allTitles,allSubTitles]);
+    const arrayOfRefresh = allTitles.map((item, index) => Number(index + 1));
+    const arrayOfRefreshedItems = allTitles.map((item) => item.id);
+    updateTitleNumber(arrayOfRefresh,arrayOfRefreshedItems);
+  
+
+  
+  
+
+  }, [allTitles,allSubTitles,arrayOfRefresh,arrayOfRefreshedItems]);
 
   const handleClickCreate = () => {
     setCounter(counterSlice);
@@ -106,19 +121,20 @@ export default function Title({ childCounter }) {
     e.stopPropagation();
   };
 
-  const handleTitleAddT_number = (e) => {
-    setIsOpen(false);
-    setTitleNumber(e.target.value);
-    e.stopPropagation();
-  };
+  // const handleTitleAddT_number = (e) => {
+  //   setIsOpen(false);
+  //   setTitleNumber(e.target.value);
+  //   e.stopPropagation();
+  // };
 
   const handleClick = async (e,id) => {
     console.log('subtitleEdit id=',id)
     setIsOpen(false);
     const formData = new FormData();
-    formData.append("t_number", titleNumber);
-    formData.append("name", titleName);
+    
   
+    formData.append("t_number", String(allTitlesArray.length+1));
+    formData.append("name", titleName);
 
 
 
@@ -149,6 +165,16 @@ export default function Title({ childCounter }) {
     await dispatch(UpdateTitleAction(formData));
   };
 
+  const updateTitleNumber = async (arrayOfRefresh,arrayOfRefreshedItems) => {
+    const formData = new FormData();
+    formData.append("t_number", arrayOfRefresh);
+    formData.append("passedId", arrayOfRefreshedItems);
+    console.log("Pass array of refresh = ", arrayOfRefresh,arrayOfRefreshedItems)
+
+    await dispatch(UpdateTitleNumberAction(formData));
+  };
+
+
   const updateSUBTITLEhandleClick = async (passedData) => {
     console.log('passedData=',passedData)
     const formData = new FormData();
@@ -163,9 +189,33 @@ export default function Title({ childCounter }) {
   const detelehandleClick = async (passedData) => {
     const formData = new FormData();
     formData.append("passedId", passedData);
+     await dispatch(deleteTitleAction(passedData));
+     await dispatch(getAllTitlesAction());
+     
 
-    await dispatch(deleteTitleAction(passedData));
-    await dispatch(getAllTitlesAction());
+    // const updatedTitles = useSelector((state) => state.auth.allTitles);
+
+    // console.log('updatedTitles=',updatedTitles)
+    // const arrayOfRefresh = allTitles.map((item, index) => Number(index + 1));
+    // const arrayOfRefreshedItems = allTitles.map((item) => item.id);
+  
+    // console.log('arrayOfRefresh after deletion:', arrayOfRefresh);
+    // console.log('arrayOfRefreshedItems after deletion:', arrayOfRefreshedItems);
+  
+  
+    // console.log('1. allTitlesArray from deleteHandleClick=',allTitles)
+    
+  
+    //   // console.log('arrayOfREFRESHCHANGED inside deleteHandleCkick',arrayOfREFRESHCHANGED)
+  
+    //   // if(arrayOfREFRESHCHANGED==true){
+    
+  
+    //  updateTitleNumber(arrayOfRefresh,arrayOfRefreshedItems);
+   
+    
+  
+    
 
   };
 
@@ -214,13 +264,13 @@ export default function Title({ childCounter }) {
           <div style={{ width: "100%",'backgroundColor':"gray" }} color="dark" >
             <div className="d-flex justify-content-between">
               <div className="justify-content-start">
-                <input
+                {/* <input
                   onChange={handleTitleAddT_number}
                   type="text"
                   placeholder="введине #"
                   style={{ width: "100px" }}
                   className="me-2"
-                />
+                /> */}
                 <input onChange={handleTitleinputChange} type="text" placeholder="введите наименование" />
                 <button onClick={handleClick} className="btn btn-light me-5">
                   save
@@ -448,6 +498,15 @@ export default function Title({ childCounter }) {
       {allTitlesArray.map((item,index) => {
         // console.log('1 item=', item);
 
+       
+         
+    
+          
+          // console.log('arrayofRefresh from deletehandleClick',arrayOfRefresh)
+        
+    
+
+
         const matchingSubTitles = allSubTitlesArray.filter((item2) => item2.TitleId === item.id);
 
         return (
@@ -456,13 +515,15 @@ export default function Title({ childCounter }) {
             <div style={{ width: "100%" ,'backgroundColor':"gray"}} color="dark" onClick={toggleAccordion[index]}>
               <div className="d-flex justify-content-between">
                 <div className="justify-content-start">
-                  <input
+                  {item.t_number}
+                  {/* <input
                     onChange={handleTitleAddT_number}
                     type="text"
+                    value={index+1}
                     placeholder={item.t_number}
                     style={{ width: "100px" }}
                     className="me-2"
-                  />
+                  /> */}
                   <input onChange={handleTitleinputChange} type="text" placeholder={item.name} />
                   <button onClick={() => updatehandleClick(item.id)} className="btn btn-light me-5">
                     Изменить
@@ -496,13 +557,13 @@ export default function Title({ childCounter }) {
             {/* <div style={{ width: "100%",'backgroundColor':"gray" }} color="dark"  > */}
               <div className="d-flex justify-content-between">
                 <div className="justify-content-start">
-                  <input
+                  {/* <input
                     onChange={handleTitleAddT_number}
                     type="text"
                     placeholder={subTitle.p_number}
                     style={{ width: "100px" }}
                     className="me-2"
-                  />
+                  /> */}
                   <input onChange={handleTitleinputChange} type="text" placeholder={subTitle.name} />
                   <button onClick={() => updateSUBTITLEhandleClick(subTitle.id)} className="btn btn-light me-5">
                     Изменить
@@ -574,6 +635,7 @@ export default function Title({ childCounter }) {
           </div>
         );
       })}
+      {arrayOfREFRESHCHANGED=true}
       {/* <TreeView/> */}
     </>
   );
